@@ -1,0 +1,39 @@
+name: gromacs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gromacs-build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        aiida-core: [2.6.1, 2.6.2, 2.6.3]
+        gromacs: [25.4]
+        python: [3.11]
+    name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v6.0.1
+
+      - name: Authenticate with GHCR
+        uses: docker/login-action@v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.BUILD_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.11.1
+
+      - name: Build and push
+        uses: docker/build-push-action@v6.18.0
+        with:
+          file: ./gromacs/Dockerfile
+          build-args: |
+            AIIDAVERSION=${{ matrix.aiida-core }}
+            GMXVERSION=${{ matrix.gromacs }}
+            PYTHONVERSION=${{ matrix.python }}
+          tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-gromacs-testenv:$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
+          push: true

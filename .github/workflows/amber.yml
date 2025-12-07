@@ -3,9 +3,6 @@ name: amber
 on:
   workflow_dispatch:
 
-env:
-  date: $(date +'%Y-%m-%d')
-
 jobs:
   amber-build:
     runs-on: ubuntu-24.04
@@ -17,6 +14,11 @@ jobs:
     name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}
     steps:
  
+      - name: prepare tag
+        id: date
+        run: |
+            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
+
       - name: checkout
         uses: actions/checkout@v6.0.1
 
@@ -38,6 +40,5 @@ jobs:
             AIIDAVERSION=${{ matrix.aiida-core }}
             AMBERTOOLSVERSION=${{ matrix.ambertools }}
             PYTHONVERSION=${{ matrix.python }}
-          tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-amber-testenv:${{ env.date }}-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}
+          tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-amber-testenv:${{ steps.date.outputs.tag }}
           push: true
-

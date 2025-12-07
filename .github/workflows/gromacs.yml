@@ -14,6 +14,11 @@ jobs:
     name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
     steps:
 
+      - name: prepare tag
+        id: date
+        run: |
+            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
+
       - name: checkout
         uses: actions/checkout@v6.0.1
 
@@ -35,5 +40,5 @@ jobs:
             AIIDAVERSION=${{ matrix.aiida-core }}
             GMXVERSION=${{ matrix.gromacs }}
             PYTHONVERSION=${{ matrix.python }}
-          tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-gromacs-testenv:$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
+          tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-gromacs-testenv:${{ steps.date.outputs.tag }}
           push: true

@@ -3,7 +3,7 @@ FROM ghcr.io/mamba-org/micromamba:2.4.0-ubuntu24.04
 LABEL maintainer="James Gebbie-Rayet <james.gebbie@stfc.ac.uk>"
 
 ARG AIIDAVERSION=2.6.1
-ARG AMBERTOOLSVERSION=24
+ARG AMBERTOOLSVERSION=24.8
 ARG PYTHONVERSION=3.11
 
 # Install dependencies

@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         aiida-core: [2.6.1, 2.6.2, 2.6.3]
-        ambertools: [25]
+        ambertools: [24.8]
         python: [3.11]
     name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}
     steps:

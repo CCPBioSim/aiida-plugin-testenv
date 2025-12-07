@@ -17,7 +17,7 @@ jobs:
       - name: prepare tag
         id: date
         run: |
-            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
+            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}" >> $GITHUB_OUTPUT
 
       - name: checkout
         uses: actions/checkout@v6.0.1

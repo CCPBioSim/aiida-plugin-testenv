@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         aiida-core: [2.6.1, 2.6.2, 2.6.3]
-        gromacs: [25.4]
+        gromacs: [2025.4]
         python: [3.11]
     name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
     steps:

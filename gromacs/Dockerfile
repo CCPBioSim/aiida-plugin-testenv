@@ -30,6 +30,6 @@ ENV MAMBA_USER=$NEW_MAMBA_USER
 USER $MAMBA_USER
 
 # Install dependencies
-RUN micromamba install -c conda-forge python=$PYTHONVERSION aiida-core=$AIIDAVERSION gromacs=$GMXVERSION && \
+RUN micromamba install -c conda-forge python=$PYTHONVERSION aiida-core=$AIIDAVERSION aiida-core.services=$AIIDAVERSION gromacs=$GMXVERSION && \
 micromamba clean --all --yes
 

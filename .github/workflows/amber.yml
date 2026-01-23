@@ -20,7 +20,7 @@ jobs:
             echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
 
       - name: checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Authenticate with GHCR
         uses: docker/login-action@v3.6.0

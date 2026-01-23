@@ -4,6 +4,7 @@ LABEL maintainer="James Gebbie-Rayet <james.gebbie@stfc.ac.uk>"
 
 ARG AIIDAVERSION=2.6.1
 ARG GMXVERSION=2025.4
+ARG PLUMEDVERSION=2.9.2
 ARG PYTHONVERSION=3.11
 ARG NEW_MAMBA_USER=aiida
 ARG NEW_MAMBA_USER_ID=1001
@@ -30,6 +31,7 @@ ENV MAMBA_USER=$NEW_MAMBA_USER
 USER $MAMBA_USER
 
 # Install dependencies
-RUN micromamba install -c conda-forge python=$PYTHONVERSION aiida-core=$AIIDAVERSION aiida-core.services=$AIIDAVERSION gromacs=$GMXVERSION && \
-micromamba clean --all --yes
+RUN micromamba install -c conda-forge python=$PYTHONVERSION aiida-core=$AIIDAVERSION aiida-core.services=$AIIDAVERSION && \
+    micromamba install -c conda-forge gromacs=$GMXVERSION plumed=$PLUMEDVERSION && \
+    micromamba clean --all --yes
 

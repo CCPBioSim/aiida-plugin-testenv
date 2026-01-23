@@ -31,4 +31,5 @@ USER $MAMBA_USER
 
 # Install dependencies
 RUN micromamba install -c conda-forge python=$PYTHONVERSION aiida-core=$AIIDAVERSION aiida-core.services=$AIIDAVERSION ambertools=$AMBERTOOLSVERSION && \
-micromamba clean --all --yes
+    micromamba install -c ambertools=$AMBERTOOLSVERSION && \
+    micromamba clean --all --yes

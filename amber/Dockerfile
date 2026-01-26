@@ -77,7 +77,6 @@ RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     mv ambertools${AMBERTOOLSVERSION}_src ambertools_src
 
 WORKDIR /tmp/ambertools_src
-RUN ./update_amber --update
 RUN mkdir /tmp/build
 WORKDIR /tmp/build
 
@@ -90,6 +89,7 @@ RUN rm -r /tmp/ambertools_src /tmp/build
 
 # Add the exec to the path.
 ENV AMBERHOME=/opt/ambertools
+ENV PATH=/opt/ambertools/bin:$PATH
 
 USER ${SYSTEM_UID}
 

@@ -94,7 +94,7 @@ ENV AMBERHOME=/opt/ambertools
 USER ${SYSTEM_UID}
 
 # Download and install Micromamba, and initialize Conda prefix.
-COPY --chown="${SYSTEM_UID}:${SYSTEM_GID}" .condarc "${CONDA_DIR}/.condarc"
+COPY --chown="${SYSTEM_UID}:${SYSTEM_GID}" amber/.condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
 RUN set -x && \
     arch=$(uname -m) && \

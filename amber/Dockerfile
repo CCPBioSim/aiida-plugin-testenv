@@ -6,6 +6,7 @@ LABEL maintainer="James Gebbie-Rayet <james.gebbie@stfc.ac.uk>"
 # Define customisable args
 ARG AMBERTOOLS_DL=null
 ARG AMBERTOOLSVERSION=25
+ARG PYTHONVERSION=3.11
 ARG SYSTEM_USER=aiida
 ARG SYSTEM_UID=1001
 ARG SYSTEM_GID=121
@@ -70,27 +71,6 @@ RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
 RUN mkdir /github && \
     chown "${SYSTEM_USER}:${SYSTEM_GID}" /github
 
-WORKDIR /tmp
-RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
-    tar xjf ambertools$AMBERTOOLSVERSION.tar.bz2 && \
-    rm ambertools$AMBERTOOLSVERSION.tar.bz2 && \
-    mv ambertools${AMBERTOOLSVERSION}_src ambertools_src
-
-WORKDIR /tmp/ambertools_src
-RUN ./update_amber --update
-RUN mkdir /tmp/build
-WORKDIR /tmp/build
-
-RUN cmake /tmp/ambertools_src -DCMAKE_INSTALL_PREFIX=/opt/ambertools -DUSE_CONDA_LIBS=FALSE -DBUILD_PYTHON=FALSE -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE -DDOWNLOAD_MINICONDA=FALSE -DCOMPILER=MANUAL -DBUILD_GUI=FALSE -DCOMPILER=GNU -DOPENMP=TRUE -DCUDA=FALSE -DMPI=FALSE -DUSE_FFT=True -DBUILD_DEPRECATED=False -DBUILD_INDEV=False -DBUILD_PERL=True -DOPTIMIZE=True
-RUN make -j8
-RUN make install
-
-# Cleanup.
-RUN rm -r /tmp/ambertools_src /tmp/build
-
-# Add the exec to the path.
-ENV AMBERHOME=/opt/ambertools
-
 USER ${SYSTEM_UID}
 
 # Download and install Micromamba, and initialize Conda prefix.
@@ -116,6 +96,30 @@ RUN set -x && \
 # Add ~/.local/bin to PATH where the dependencies get installed via pip
 # This require the package installed with `--user` flag in pip
 ENV PATH=${PATH}:/home/${SYSTEM_USER}/.local/bin
+
+RUN mamba install -c conda-forge python=$PYTHONVERSION numpy=2.2 matplotlib scipy
+
+USER root
+WORKDIR /tmp
+RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
+    tar xjf ambertools$AMBERTOOLSVERSION.tar.bz2 && \
+    rm ambertools$AMBERTOOLSVERSION.tar.bz2 && \
+    mv ambertools${AMBERTOOLSVERSION}_src ambertools_src
+
+WORKDIR /tmp/ambertools_src
+RUN ./update_amber --update
+RUN mkdir /tmp/build
+WORKDIR /tmp/build
+
+RUN cmake /tmp/ambertools_src -DCMAKE_INSTALL_PREFIX=/opt/conda -DPYTHON_EXECUTABLE=/opt/conda/bin/python -DUSE_CONDA_LIBS=TRUE -DBUILD_PYTHON=TRUE -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE -DDOWNLOAD_MINICONDA=FALSE -DCOMPILER=MANUAL -DBUILD_GUI=FALSE -DCOMPILER=GNU -DOPENMP=TRUE -DCUDA=FALSE -DMPI=FALSE -DUSE_FFT=True -DBUILD_DEPRECATED=False -DBUILD_INDEV=False -DBUILD_PERL=True -DOPTIMIZE=True
+RUN make -j8
+RUN make install
+
+# Cleanup.
+RUN rm -r /tmp/ambertools_src /tmp/build
+
+# Add the exec to the path.
+ENV AMBERHOME=/opt/ambertools
 
 # Switch back to USER aiida to avoid accidental container runs as root
 USER ${SYSTEM_UID}

@@ -9,13 +9,14 @@ jobs:
     strategy:
       matrix:
         ambertools: [25]
-    name: ambertools${{ matrix.ambertools }}
+        python: [3.11]
+    name: py${{ matrix.ambertools }}-ambertools${{ matrix.ambertools }}
     steps:
  
       - name: prepare tag
         id: date
         run: |
-            echo "tag=$(date +'%Y-%m-%d')-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
+            echo "tag=$(date +'%Y-%m-%d')py${{ matrix.ambertools }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
 
       - name: checkout
         uses: actions/checkout@v6.0.2
@@ -37,5 +38,6 @@ jobs:
           build-args: |
             AMBERTOOLS_DL=${{ secrets.AMBERTOOLS_DL }}
             AMBERTOOLSVERSION=${{ matrix.ambertools }}
+            PYTHONVERSION=${{ matrix.python }}
           tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-amber-testenv:${{ steps.date.outputs.tag }}
           push: true

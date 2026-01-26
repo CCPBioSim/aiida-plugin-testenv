@@ -89,6 +89,7 @@ RUN rm -r /tmp/ambertools_src /tmp/build
 
 # Add the exec to the path.
 ENV AMBERHOME=/opt/ambertools
+ENV PATH=/opt/ambertools/bin:$PATH
 
 USER ${SYSTEM_UID}
 

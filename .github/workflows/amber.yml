@@ -8,16 +8,14 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        aiida-core: [2.6.1, 2.6.2, 2.6.3]
-        ambertools: [24.8]
-        python: [3.11]
-    name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}
+        ambertools: [25]
+    name: ambertools${{ matrix.ambertools }}
     steps:
  
       - name: prepare tag
         id: date
         run: |
-            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
+            echo "tag=$(date +'%Y-%m-%d')-ambertools${{ matrix.ambertools }}" >> $GITHUB_OUTPUT
 
       - name: checkout
         uses: actions/checkout@v6.0.2
@@ -37,8 +35,7 @@ jobs:
         with:
           file: ./amber/Dockerfile
           build-args: |
-            AIIDAVERSION=${{ matrix.aiida-core }}
+            AMBERTOOLS_DL=${{ secrets.AMBERTOOLS_DL }}
             AMBERTOOLSVERSION=${{ matrix.ambertools }}
-            PYTHONVERSION=${{ matrix.python }}
           tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-amber-testenv:${{ steps.date.outputs.tag }}
           push: true

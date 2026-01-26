@@ -10,7 +10,7 @@ jobs:
       matrix:
         ambertools: [25]
         python: [3.11]
-    name: py${{ matrix.ambertools }}-ambertools${{ matrix.ambertools }}
+    name: py${{ matrix.python }}-ambertools${{ matrix.ambertools }}
     steps:
  
       - name: prepare tag

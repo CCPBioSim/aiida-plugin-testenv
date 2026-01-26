@@ -4,10 +4,8 @@ FROM $BASE_IMAGE
 LABEL maintainer="James Gebbie-Rayet <james.gebbie@stfc.ac.uk>"
 
 # Define customisable args
-ARG AIIDAVERSION=2.6.3
 ARG GMXVERSION=2025.4
 ARG PLUMEDVERSION=2.9.2
-ARG PYTHONVERSION=3.11
 ARG SYSTEM_USER=aiida
 ARG SYSTEM_UID=1001
 ARG SYSTEM_GID=121
@@ -72,40 +70,7 @@ RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
 RUN mkdir /github && \
     chown "${SYSTEM_USER}:${SYSTEM_GID}" /github
 
-USER ${SYSTEM_UID}
-
-# Download and install Micromamba, and initialize Conda prefix.
-COPY --chown="${SYSTEM_UID}:${SYSTEM_GID}" gromacs/.condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
-RUN set -x && \
-    arch=$(uname -m) && \
-    if [ "${arch}" = "x86_64" ]; then \
-        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
-        arch="64"; \
-    fi && \
-    wget --progress=dot:giga -O /tmp/micromamba.tar.bz2 \
-        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
-    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
-    rm /tmp/micromamba.tar.bz2 && \
-    ./micromamba install \
-        --root-prefix="${CONDA_DIR}" \
-        --prefix="${CONDA_DIR}" \
-        --yes \
-        'mamba' && \
-    rm micromamba
-
-# Add ~/.local/bin to PATH where the dependencies get installed via pip
-# This require the package installed with `--user` flag in pip
-ENV PATH=${PATH}:/home/${SYSTEM_USER}/.local/bin
-
-# Install dependencies
-RUN mamba install -c conda-forge mamba python=$PYTHONVERSION aiida-core=$AIIDAVERSION aiida-core.services=$AIIDAVERSION && \
-    mamba clean --all --yes
-
-# Change to root and build in /tmp.
-USER root
-WORKDIR /tmp
-
 # Grab the specified version of plumed and untar the source.
 RUN wget https://github.com/plumed/plumed2/archive/refs/tags/v${PLUMEDVERSION}.tar.gz && \
     tar xvf v${PLUMEDVERSION}.tar.gz && \
@@ -146,11 +111,38 @@ RUN make -j8
 RUN make install
 
 # Cleanup and fix permissions.
-RUN rm -r /tmp/gromacs-${GMXVERSION}
+RUN rm -r /tmp/gromacs-${GMXVERSION}  /tmp/plumed2-${PLUMEDVERSION}
 RUN chown ${SYSTEM_UID}:${SYSTEM_GID} -R /opt/gromacs-${GMXVERSION}
+RUN chown ${SYSTEM_UID}:${SYSTEM_GID} -R /opt/plumed2-${PLUMEDVERSION}
 
 # Add the exec to the path.
 ENV PATH=/opt/gromacs-${GMXVERSION}/bin:$PATH
+
+USER ${SYSTEM_UID}
+
+# Download and install Micromamba, and initialize Conda prefix.
+COPY --chown="${SYSTEM_UID}:${SYSTEM_GID}" gromacs/.condarc "${CONDA_DIR}/.condarc"
+WORKDIR /tmp
+RUN set -x && \
+    arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
+        arch="64"; \
+    fi && \
+    wget --progress=dot:giga -O /tmp/micromamba.tar.bz2 \
+        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
+    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
+    rm /tmp/micromamba.tar.bz2 && \
+    ./micromamba install \
+        --root-prefix="${CONDA_DIR}" \
+        --prefix="${CONDA_DIR}" \
+        --yes \
+        'mamba' && \
+    rm micromamba
+
+# Add ~/.local/bin to PATH where the dependencies get installed via pip
+# This require the package installed with `--user` flag in pip
+ENV PATH=${PATH}:/home/${SYSTEM_USER}/.local/bin
 
 # Switch back to USER aiida to avoid accidental container runs as root
 USER ${SYSTEM_UID}

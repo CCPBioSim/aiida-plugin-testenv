@@ -8,17 +8,15 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        aiida-core: [2.6.1, 2.6.2, 2.6.3]
         gromacs: [2025.4]
-        python: [3.11]
         plumed: [2.9.2]
-    name: py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}
+    name: gromacs${{ matrix.gromacs }}-plumed${{ matrix.plumed }}
     steps:
 
       - name: prepare tag
         id: date
         run: |
-            echo "tag=$(date +'%Y-%m-%d')-py${{ matrix.python }}-aiida${{ matrix.aiida-core }}-gromacs${{ matrix.gromacs }}" >> $GITHUB_OUTPUT
+            echo "tag=$(date +'%Y-%m-%d')-gromacs${{ matrix.gromacs }}-plumed${{ matrix.plumed }}" >> $GITHUB_OUTPUT
 
       - name: checkout
         uses: actions/checkout@v6.0.2
@@ -38,9 +36,7 @@ jobs:
         with:
           file: ./gromacs/Dockerfile
           build-args: |
-            AIIDAVERSION=${{ matrix.aiida-core }}
             GMXVERSION=${{ matrix.gromacs }}
             PLUMEDVERSION=${{ matrix.plumed }}
-            PYTHONVERSION=${{ matrix.python }}
           tags: ghcr.io/${{ vars.ORG_REPO }}/aiida-gromacs-testenv:${{ steps.date.outputs.tag }}
           push: true

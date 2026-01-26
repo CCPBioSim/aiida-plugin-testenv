@@ -77,7 +77,6 @@ RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     mv ambertools${AMBERTOOLSVERSION}_src ambertools_src
 
 WORKDIR /tmp/ambertools_src
-RUN ./update_amber --update
 RUN mkdir /tmp/build
 WORKDIR /tmp/build
 

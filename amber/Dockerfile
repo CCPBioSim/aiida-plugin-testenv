@@ -104,7 +104,7 @@ WORKDIR /tmp
 RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     tar xjf ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     rm ambertools$AMBERTOOLSVERSION.tar.bz2 && \
-    mv ambertools${AMBERTOOLSVERSION}_src ambertools_src
+    find . -name "amber*" -exec mv '{}' ambertools_src \;
 
 WORKDIR /tmp/ambertools_src
 RUN ./update_amber --update

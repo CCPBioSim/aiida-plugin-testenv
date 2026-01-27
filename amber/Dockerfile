@@ -119,7 +119,7 @@ RUN make install
 RUN rm -r /tmp/ambertools_src /tmp/build
 
 # Add the exec to the path.
-ENV AMBERHOME=/opt/ambertools
+ENV AMBERHOME=/opt/conda
 
 # Switch back to USER aiida to avoid accidental container runs as root
 USER ${SYSTEM_UID}

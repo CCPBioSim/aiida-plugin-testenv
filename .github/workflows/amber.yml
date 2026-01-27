@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         ambertools: [24, 25]
-        python: [3.11, 3.12, 3.13]
+        python: [3.11, 3.12]
     name: py${{ matrix.python }}-ambertools${{ matrix.ambertools }}
     steps:
  

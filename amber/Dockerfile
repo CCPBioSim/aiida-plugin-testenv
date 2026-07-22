@@ -101,7 +101,7 @@ RUN mamba install -c conda-forge python=$PYTHONVERSION numpy=2.2 matplotlib scip
 
 USER root
 WORKDIR /tmp
-RUN wget --no-verbose $AMBERTOOLS_DL/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
+RUN wget --no-verbose $AMBERTOOLS_DL/ambertools/ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     tar xjf ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     rm ambertools$AMBERTOOLSVERSION.tar.bz2 && \
     find . -mindepth 1 -maxdepth 1 -type d -name "amber*" -exec mv '{}' ambertools_src \;
